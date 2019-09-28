@@ -112,7 +112,7 @@ struct unordered_set {
         ++cnt;
         table[pos].push_back(val);
 
-        if (table[pos].size() * 2 > cnt) {
+        if (3 * cnt >= 4 * len) {
             reserve(len * 2);
         }
 
@@ -183,7 +183,7 @@ private:
     std::hash<T> h;
     size_t cnt = 0, len = 100;
 
-    size_t get_next_bucket(size_t pos) {
+    size_t get_next_bucket(size_t pos) const {
         ++pos;
         while (pos < table.size() && table[pos].empty()) {
             ++pos;
