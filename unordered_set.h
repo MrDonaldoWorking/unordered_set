@@ -1,5 +1,3 @@
-#include <utility>
-
 #ifndef UNORDERED_SET_H
 #define UNORDERED_SET_H
 
@@ -22,7 +20,7 @@ struct unordered_set {
         us_const_iterator(us_const_iterator const&) = default;
         us_const_iterator &operator=(us_const_iterator const&) = default;
 
-        us_const_iterator operator++() {
+        us_const_iterator &operator++() {
             ++l_pos;
 
             if (l_pos == data[v_pos].size()) {
@@ -46,13 +44,12 @@ struct unordered_set {
         }
 
         friend bool operator==(us_const_iterator const& j,
-                               us_const_iterator const& i)
-        noexcept {
+                               us_const_iterator const& i) noexcept {
             return j.v_pos == i.v_pos && j.l_pos == i.l_pos;
         }
 
         friend bool operator!=(us_const_iterator const& j,
-                               us_const_iterator const& i) {
+                               us_const_iterator const& i) noexcept {
             return j.v_pos != i.v_pos || j.l_pos != i.l_pos;
         }
 
@@ -92,14 +89,9 @@ struct unordered_set {
     ~unordered_set() = default;
 
     unordered_set &operator=(unordered_set const& u) {
-        if (this == &u) {
-            return *this;
+        if (this != &u) {
+            unordered_set(u).swap(*this);
         }
-
-        table = u.table;
-        bucket = u.bucket;
-        cnt = u.cnt;
-        len = u.len;
         return *this;
     }
 
@@ -154,7 +146,7 @@ struct unordered_set {
         std::swap(us.len, len);
     }
 
-    size_t count(size_t key) const {
+    size_t count(size_t key) const noexcept {
         size_t pos = h(key);
         for (auto& v : table[pos]) {
             if (v == key) {
@@ -164,7 +156,7 @@ struct unordered_set {
         return 0;
     }
 
-    iterator find(size_t key) {
+    iterator find(size_t key) const noexcept {
         size_t pos = h(key);
         for (auto it = table[pos].begin(); it != table[pos].end(); ++it) {
             if (*it == key) {
@@ -207,6 +199,7 @@ struct unordered_set {
             table[pos].insert(table[pos].begin(), *it);
         }
     }
+
 private:
     std::vector<std::vector<T>> table;
     std::set<size_t> bucket;
